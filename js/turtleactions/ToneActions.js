@@ -44,6 +44,10 @@
  * @returns {void}
  */
 function setupToneActions(activity) {
+    var { safeNumber } =
+        (typeof window !== "undefined" ? window.UtilsLogic : null) ||
+        (typeof require !== "undefined" ? require("../utils/utils-logic") : {});
+
     Singer.ToneActions = class {
         /**
          * Selects a voice for the synthesizer.
@@ -132,6 +136,9 @@ function setupToneActions(activity) {
          * @param {Number} blk - corresponding Block object in blocks.blockList
          */
         static doVibrato(intensity, rate, turtle, blk) {
+            intensity = safeNumber(intensity);
+            rate = safeNumber(rate);
+
             if (intensity < 1 || intensity > 100) {
                 activity.errorMsg(_("Vibrato intensity must be between 1 and 100."), blk);
                 activity.logo.stopTurtle = true;
@@ -189,7 +196,9 @@ function setupToneActions(activity) {
          * @param {Number} blk - corresponding Block object in blocks.blockList
          */
         static doChorus(chorusRate, delayTime, chorusDepth, turtle, blk) {
-            chorusDepth /= 100;
+            chorusRate = safeNumber(chorusRate);
+            delayTime = safeNumber(delayTime);
+            chorusDepth = safeNumber(chorusDepth) / 100;
 
             if (chorusDepth < 0 || chorusDepth > 1) {
                 activity.errorMsg(_("Depth is out of range."), blk);
@@ -230,6 +239,10 @@ function setupToneActions(activity) {
          * @param {Number} blk - corresponding Block object in blocks.blockList
          */
         static doPhaser(rate, octaves, baseFrequency, turtle, blk) {
+            rate = safeNumber(rate);
+            octaves = safeNumber(octaves);
+            baseFrequency = safeNumber(baseFrequency);
+
             const tur = activity.turtles.ithTurtle(turtle);
 
             tur.singer.rate.push(rate);
@@ -300,7 +313,7 @@ function setupToneActions(activity) {
          * @param {Number} blk - corresponding Block index in blocks.blockList
          */
         static doDistortion(distortion, turtle, blk) {
-            distortion /= 100;
+            distortion = safeNumber(distortion) / 100;
 
             if (distortion < 0 || distortion > 1) {
                 activity.errorMsg(_("Distortion must be from 0 to 100."), blk);

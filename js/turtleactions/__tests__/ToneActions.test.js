@@ -18,7 +18,6 @@
  */
 
 const setupToneActions = require("../ToneActions");
-
 describe("setupToneActions", () => {
     let activity;
     let targetTurtle;
@@ -433,6 +432,25 @@ describe("setupToneActions", () => {
             expect(targetTurtle.singer.chorusDepth).toEqual([]);
         });
 
+        it("should gracefully coerce invalid chorus parameters to 0", () => {
+            const invalidInputs = [NaN, Infinity, -Infinity, undefined, "abc", null];
+            invalidInputs.forEach(invalidVal => {
+                activity.logo.stopTurtle = false;
+                Singer.ToneActions.doChorus(invalidVal, invalidVal, invalidVal, 0, 1);
+
+                // Depth becomes 0, which is valid, so no error is thrown
+                expect(activity.errorMsg).not.toHaveBeenCalled();
+                expect(targetTurtle.singer.chorusRate).toContain(0);
+                expect(targetTurtle.singer.delayTime).toContain(0);
+                expect(targetTurtle.singer.chorusDepth).toContain(0);
+
+                // Cleanup
+                targetTurtle.singer.chorusRate.pop();
+                targetTurtle.singer.delayTime.pop();
+                targetTurtle.singer.chorusDepth.pop();
+            });
+        });
+
         it("should show error for negative chorus depth", () => {
             Singer.ToneActions.doChorus(1.5, 20, -10, 0, 1);
             expect(activity.errorMsg).toHaveBeenCalledWith("Depth is out of range.", 1);
@@ -482,6 +500,21 @@ describe("setupToneActions", () => {
     });
 
     describe("doPhaser", () => {
+        it("should gracefully coerce invalid phaser parameters to 0", () => {
+            const invalidInputs = [NaN, Infinity, -Infinity, undefined, "abc", null];
+            invalidInputs.forEach(invalidVal => {
+                Singer.ToneActions.doPhaser(invalidVal, invalidVal, invalidVal, 0, 1);
+                expect(targetTurtle.singer.rate).toContain(0);
+                expect(targetTurtle.singer.octaves).toContain(0);
+                expect(targetTurtle.singer.baseFrequency).toContain(0);
+
+                // Cleanup
+                targetTurtle.singer.rate.pop();
+                targetTurtle.singer.octaves.pop();
+                targetTurtle.singer.baseFrequency.pop();
+            });
+        });
+
         it("should apply phaser effect correctly", () => {
             Singer.ToneActions.doPhaser(2, 3, 100, 0, 1);
             expect(targetTurtle.singer.rate).toContain(2);
@@ -608,6 +641,21 @@ describe("setupToneActions", () => {
             expect(activity.errorMsg).toHaveBeenCalledWith("Distortion must be from 0 to 100.", 1);
             expect(activity.logo.stopTurtle).toBe(true);
             expect(targetTurtle.singer.distortionAmount).toEqual([]);
+        });
+
+        it("should gracefully coerce invalid distortion parameters to 0", () => {
+            const invalidInputs = [NaN, Infinity, -Infinity, undefined, "abc", null];
+            invalidInputs.forEach(invalidVal => {
+                activity.logo.stopTurtle = false;
+                Singer.ToneActions.doDistortion(invalidVal, 0, 1);
+
+                // Distortion becomes 0, which is valid, so no error is thrown
+                expect(activity.errorMsg).not.toHaveBeenCalled();
+                expect(targetTurtle.singer.distortionAmount).toContain(0);
+
+                // Cleanup
+                targetTurtle.singer.distortionAmount.pop();
+            });
         });
 
         it("should show error for negative distortion amount", () => {
@@ -909,6 +957,107 @@ describe("setupToneActions", () => {
             Singer.ToneActions.defDuoSynth(10, 20, 0, 1);
             expect(activity.errorMsg).not.toHaveBeenCalled();
             expect(activity.logo.synth.createSynth).not.toHaveBeenCalled();
+        });
+    });
+
+    describe("doVibrato", () => {
+        beforeEach(() => {
+            targetTurtle = {
+                singer: { vibratoIntensity: [], vibratoRate: [] }
+            };
+            activity.logo.stopTurtle = false;
+            activity.errorMsg = jest.fn();
+            activity.logo.inTimbre = false;
+            activity.logo.timbre = {
+                instrumentName: "default-voice",
+                vibratoEffect: [],
+                vibratoParams: []
+            };
+            activity.logo.setDispatchBlock = jest.fn();
+            activity.logo.setTurtleListener = jest.fn((_, __, cb) => {
+                cb(); // immediately execute __listener which pops
+            });
+        });
+
+        it("should gracefully reject invalid vibrato parameters by coercing them to 0", () => {
+            const invalidInputs = [NaN, Infinity, -Infinity, undefined, "abc", null];
+            invalidInputs.forEach(invalidVal => {
+                activity.logo.stopTurtle = false;
+                Singer.ToneActions.doVibrato(invalidVal, 10, 0, 1);
+                expect(activity.errorMsg).toHaveBeenCalledWith(
+                    _("Vibrato intensity must be between 1 and 100."),
+                    1
+                );
+                expect(activity.logo.stopTurtle).toBe(true);
+
+                activity.logo.stopTurtle = false;
+                Singer.ToneActions.doVibrato(10, invalidVal, 0, 1);
+                expect(activity.errorMsg).toHaveBeenCalledWith(
+                    _("Vibrato rate must be greater than 0."),
+                    1
+                );
+                expect(activity.logo.stopTurtle).toBe(true);
+            });
+        });
+
+        it("should gracefully reject out-of-bounds intensity", () => {
+            Singer.ToneActions.doVibrato(0, 10, 0, 1); // < 1
+            expect(activity.errorMsg).toHaveBeenCalledWith(
+                _("Vibrato intensity must be between 1 and 100."),
+                1
+            );
+            expect(activity.logo.stopTurtle).toBe(true);
+
+            activity.logo.stopTurtle = false;
+            Singer.ToneActions.doVibrato(101, 10, 0, 1); // > 100
+            expect(activity.errorMsg).toHaveBeenCalledWith(
+                _("Vibrato intensity must be between 1 and 100."),
+                1
+            );
+            expect(activity.logo.stopTurtle).toBe(true);
+        });
+
+        it("should gracefully reject invalid rate", () => {
+            Singer.ToneActions.doVibrato(50, 0, 0, 1);
+            expect(activity.errorMsg).toHaveBeenCalledWith(
+                _("Vibrato rate must be greater than 0."),
+                1
+            );
+            expect(activity.logo.stopTurtle).toBe(true);
+        });
+
+        it("should push values and register dispatch correctly", () => {
+            Singer.ToneActions.doVibrato(50, 10, 0, 1);
+            expect(targetTurtle.singer.vibratoIntensity.length).toBe(0);
+            expect(targetTurtle.singer.vibratoRate.length).toBe(0);
+            expect(activity.logo.setDispatchBlock).toHaveBeenCalledWith(1, 0, "_vibrato_0");
+            expect(activity.logo.setTurtleListener).toHaveBeenCalled();
+        });
+
+        it("should register for timbre when inTimbre is true", () => {
+            activity.logo.inTimbre = true;
+            activity.logo.setTurtleListener = jest.fn(); // don't pop synchronously
+
+            Singer.ToneActions.doVibrato(50, 10, 0, 1);
+
+            expect(targetTurtle.singer.vibratoIntensity[0]).toBe(0.5);
+            expect(targetTurtle.singer.vibratoRate[0]).toBe(0.1);
+
+            expect(instrumentsEffects[0]["default-voice"]["vibratoActive"]).toBe(true);
+            expect(activity.logo.timbre.vibratoEffect).toContain(1);
+            expect(activity.logo.timbre.vibratoParams).toContain(50);
+            expect(activity.logo.timbre.vibratoParams).toContain(0.1);
+        });
+
+        it("should push mouse listeners if blk is undefined and MusicBlocks.isRun", () => {
+            activity.logo.setTurtleListener = jest.fn();
+            global.MusicBlocks.isRun = true;
+            const mockMouse = { MB: { listeners: [] } };
+            global.Mouse.getMouseFromTurtle.mockReturnValueOnce(mockMouse);
+
+            Singer.ToneActions.doVibrato(50, 10, 0, undefined);
+
+            expect(mockMouse.MB.listeners).toContain("_vibrato_0");
         });
     });
 });
