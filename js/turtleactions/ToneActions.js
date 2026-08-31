@@ -132,6 +132,15 @@ function setupToneActions(activity) {
          * @param {Number} blk - corresponding Block object in blocks.blockList
          */
         static doVibrato(intensity, rate, turtle, blk) {
+            intensity = Number(intensity);
+            rate = Number(rate);
+
+            if (Number.isNaN(intensity) || Number.isNaN(rate)) {
+                activity.errorMsg(NOINPUTERRORMSG, blk);
+                activity.logo.stopTurtle = true;
+                return;
+            }
+
             if (intensity < 1 || intensity > 100) {
                 activity.errorMsg(_("Vibrato intensity must be between 1 and 100."), blk);
                 activity.logo.stopTurtle = true;
