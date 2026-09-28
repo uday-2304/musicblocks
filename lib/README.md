@@ -23,9 +23,9 @@ If you need to view or modify the original source code, it's best to refer to th
 | 11  | `jquery.ruler.js`                     | On-screen measurement ruler widget       | [Ruler](https://github.com/hilliuse/Ruler)                                                           |
 | 12  | `materialize.min.js`                  | Material Design UI components            | [materialize](https://github.com/Dogfalo/materialize) <!-- Used in MB: v0.100.2, Latest: v1.0.0 -->  |
 | 13  | `mespeak.js`                          | Text-to-speech synthesis                 | [speak.js](https://github.com/kripken/speak.js)                                                      |
-| 14  | `midi.js`                             | MIDI parsing and playback helpers        | [midi.js]() (Upstream link TBD)                                                                      |
+| 14  | `midi.js`                             | MIDI parsing and playback helpers        | [@tonejs/midi](https://github.com/Tonejs/Midi)                                                       |
 | 15  | `modernizr-2.6.2.min.js`              | Browser feature detection                | [Modernizr](https://github.com/Modernizr/Modernizr) <!-- Used in MB: v2.6.2, Latest: v3.13.1 -->     |
-| 16  | `p5.dom.min.js`                       | p5.js DOM integration helpers            | [p5.dom.min.js]() (Upstream link TBD)                                                                |
+| 16  | `p5.dom.min.js`                       | p5.js DOM integration helpers            | [p5.js](https://github.com/processing/p5.js) (Merged into main p5 repo)                              |
 | 17  | `p5.min.js`                           | Creative coding and drawing framework    | [p5.js](https://github.com/processing/p5.js) <!-- Used in MB: v1.11.3, Latest: v1.11.4 -->           |
 | 18  | `p5.sound.min.js`                     | p5.js sound extension                    | [p5.js-sound](https://github.com/processing/p5.js-sound) <!-- Used in MB: v1.0.1, Latest: v1.0.2 --> |
 | 19  | `prefixfree.min.js`                   | Runtime CSS vendor prefixing             | [prefixfree](https://github.com/LeaVerou/prefixfree) (No longer maintained)                          |
@@ -33,7 +33,7 @@ If you need to view or modify the original source code, it's best to refer to th
 | 21  | `raphael.min.js`                      | Vector graphics drawing engine           | [raphael](https://github.com/DmitryBaranovskiy/raphael)                                              |
 | 22  | `require.js`                          | AMD module loader                        | [requirejs](https://github.com/requirejs/requirejs) <!-- Used in MB: v2.1.4, Latest: v2.3.7 -->      |
 | 23  | `reqwest.js`                          | Lightweight HTTP/AJAX client             | [reqwest](https://github.com/ded/reqwest)                                                            |
-| 24  | `sw.js`                               | Service worker support script            | [sw.js]() (Upstream link TBD)                                                                        |
+| 24  | `sw.js`                               | Service worker support script            | Internal project file (Not an external dependency)                                                   |
 | 25  | `text.js`                             | RequireJS text resource loader           | [text](https://github.com/requirejs/text) <!-- Used in MB: v2.0.10, Latest: v2.0.16 -->              |
 | 26  | `Tone.js`                             | Web audio synthesis and scheduling       | [Tone.js](https://github.com/Tonejs/Tone.js) <!-- Used in MB: Not specified; Latest: v14.7.39 -->    |
 | 27  | `tweenjs.min.js`                      | CreateJS tweening and animation          | [TweenJS](https://github.com/CreateJS/TweenJS)                                                       |
