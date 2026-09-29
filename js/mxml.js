@@ -603,7 +603,12 @@ class MusicXMLExporter {
                         if (part.isPercussion ? !obj[MXML_DRUM] : p[0] === "R") {
                             this.add("<rest/>");
                         } else if (part.isPercussion) {
-                            this.add("<unpitched/>");
+                            this.add("<unpitched>");
+                            this.indent++;
+                            this.add("<display-step>E</display-step>");
+                            this.add("<display-octave>4</display-octave>");
+                            this.indent--;
+                            this.add("</unpitched>");
                         } else {
                             this.add("<pitch>");
                             this.indent++;
